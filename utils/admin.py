@@ -28,3 +28,8 @@ class SingletonAdmin(admin.ModelAdmin):
         except self.model.DoesNotExist:
             return redirect(admin_url(self.model,"add"))
         return redirect(admin_url(self.model,"change",singleton.id))
+    def change_view(self, *args,**kwargs):
+        kwargs.setdefault("extra_context",{})
+        kwargs["extra_context"]["singleton"] = self.model.objects.count() == 1
+        response = super(SingletonAdmin,self).change_view(*args,**kwargs)
+        return self.handle_save(args[0],response)
